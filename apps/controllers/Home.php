@@ -17,8 +17,8 @@ class home extends controller{
         echo "anda memanggil action home dengan data = $data1 dan data2 = $data2 \n";
     }
 
-    public function lihatdata() {
-        $data = $this->dt->getDataOne();
+    public function lihatdata($id) {
+        $data = $this->df->getDataById($id);
 
         $this->loadview('template/header', ['title'=>'Detail Barang']);
         $this->loadview('home/detailbarang',$data);
@@ -30,12 +30,39 @@ class home extends controller{
         $this->loadview('template/header', ['title'=>'List Barang']);
         $this->loadview('home/listbarang',$data);
         $this->loadview('template/footer');
+    }
 
+    public function insertbarang() {
+        if(!empty($_POST)) {
+            if($this->df->tambahBarang($_POST)) {
+                header('Location: '.BASE_URL.'index.php?r=home/listbarang');
+                exit;
+            }
+        }
+        $this->loadview('template/header', ['title'=>'Insert Barang']);
+        $this->loadview('home/insert');
+        $this->loadview('template/footer');
+    }
 
-        // foreach($this->df->getDataAll() as $item) {
-        //     echo $item['id']. " " . $item['nama']. " ". $item['qty'];
-        //     echo "<br />";
-        // }
+    public function updatebarang($id) {
+        $data = $this->df->getDataById($id);
+        if(!empty($_POST)) {
+            if($this->df->updateBarang($_POST)) {
+                header('Location: '.BASE_URL.'index.php?r=home/listbarang');
+                exit;
+            }
+        }
+        $this->loadview('template/header', ['title'=>'Update Barang']);
+        $this->loadview('home/update', $data);
+        $this->loadview('template/footer');
+    }
+
+    public function deletebarang($id) {
+        $data = $this->df->getDataById($id);
+        if($this->df->hapusBarang($id)) {
+            header('Location: '.BASE_URL.'index.php?r=home/listbarang');
+            exit;
+        }
     }
 
 }
